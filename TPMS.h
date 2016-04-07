@@ -45,3 +45,5 @@ typedef struct {
 float* generateDataset(SURFACE_TYPE type);
 void writeOFF(char *name, SURFACEMESH *surfmesh);
 SURFACEMESH* marchingCube(float* dataset, float isovalue);
+void findBoundaries(float **bounds);
+SURFACEMESH* readMesh(char *path);

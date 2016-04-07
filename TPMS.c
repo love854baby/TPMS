@@ -680,3 +680,49 @@ void writeOFF(char *name, SURFACEMESH *surfmesh) {
 
 	fclose(fp);
 }
+
+SURFACEMESH* readMesh(char *path) {
+  int num, n, m;
+  int a, b, c, d;
+  float x, y, z;
+  SurFacemesh *surfmesh;
+  char line[256];
+  FILE *fin;
+
+
+  if ((fin=fopen(path, "r"))==NULL){
+    perror("Read Mesh File Failed!\n");
+    exit(0);
+  };
+
+  /* OFF format */
+  while (fgets(line,256,fin) != NULL) {
+    if (line[0]=='O' && line[1]=='F' && line[2]=='F')
+      break;
+  }
+
+  fscanf(fin,"%d %d %d\n",&m,&n,&num);
+
+  surfmesh = (SURFACEMESH*)malloc(sizeof(SURFACEMESH));
+  surfmesh->nv = m;
+  surfmesh->nf = n;
+  surfmesh->vertex = (FLTVECT *)malloc(sizeof(FLTVECT)*surfmesh->nv);
+  surfmesh->face = (INT3VECT *)malloc(sizeof(INT3VECT)*surfmesh->nf);
+
+  for (n = 0; n < surfmesh->nv; n++) {
+    fscanf(fin,"%f %f %f\n",&x,&y,&z);
+    surfmesh->vertex[n].x = x;
+    surfmesh->vertex[n].y = y;
+    surfmesh->vertex[n].z = z;
+  }
+
+  for (n = 0; n < surfmesh->nf; n++) {
+    fscanf(fin,"%d %d %d %d\n",&a,&b,&c,&d);
+    surfmesh->face[n].a = b;
+    surfmesh->face[n].b = c;
+    surfmesh->face[n].c = d;
+  }
+  fclose(fin);
+
+  return surfmesh;
+}
