@@ -1,3 +1,7 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <float.h>
+#include <math.h>
 #include "TPMS.h"
 
 int edgeTable[256] = {
@@ -295,36 +299,38 @@ int triTable[256][16] = {
 	{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }
 };
 
+int xpd, ypd, zpd;
+
 SURFACEMESH* marchingCube(float* dataset, float isovalue) {
-	INT3VECT *mc_edge = (INT3VECT*)malloc(sizeof(INT3VECT) * xdim * xpd * ydim * ypd * zdim * zpd);
-	unsigned char *mc_sign = (unsigned char*)malloc(sizeof(unsigned char) * xdim * xpd * ydim * ypd * zdim * zpd);
+	INT3VECT *mc_edge = (INT3VECT*)malloc(sizeof(INT3VECT) * XDIM * xpd * YDIM * ypd * ZDIM * zpd);
+	unsigned char *mc_sign = (unsigned char*)malloc(sizeof(unsigned char) * XDIM * xpd * YDIM * ypd * ZDIM * zpd);
 
 	//float max = -100, min = 100;
 
 	int i, j, k;
 
-	for (k = 0; k < zdim * zpd; k++)
-		for (j = 0; j < ydim * ypd; j++)
-			for (i = 0; i < xdim * xpd; i++) {
+	for (k = 0; k < ZDIM * zpd; k++)
+		for (j = 0; j < YDIM * ypd; j++)
+			for (i = 0; i < XDIM * xpd; i++) {
 
 				/*
-				if (dataset[IndexVect(i, j, k)] > max)
-				max = dataset[IndexVect(i, j, k)];
-				if (dataset[IndexVect(i, j, k)] < min)
-				min = dataset[IndexVect(i, j, k)];
+				if (dataset[INDEXVECT(i, j, k)] > max)
+				max = dataset[INDEXVECT(i, j, k)];
+				if (dataset[INDEXVECT(i, j, k)] < min)
+				min = dataset[INDEXVECT(i, j, k)];
 				*/
 
-				if (dataset[IndexVect(i, j, k)] > isovalue - 0.0001 && dataset[IndexVect(i, j, k)] < isovalue + 0.0001)
-					dataset[IndexVect(i, j, k)] = isovalue + 0.0001;
+				if (dataset[INDEXVECT(i, j, k)] > isovalue - 0.0001 && dataset[INDEXVECT(i, j, k)] < isovalue + 0.0001)
+					dataset[INDEXVECT(i, j, k)] = isovalue + 0.0001;
 
-				if (dataset[IndexVect(i, j, k)] >= isovalue)
-					mc_sign[IndexVect(i, j, k)] = 1;
+				if (dataset[INDEXVECT(i, j, k)] >= isovalue)
+					mc_sign[INDEXVECT(i, j, k)] = 1;
 				else
-					mc_sign[IndexVect(i, j, k)] = 255;
+					mc_sign[INDEXVECT(i, j, k)] = 255;
 
-				mc_edge[IndexVect(i, j, k)].a = -1;
-				mc_edge[IndexVect(i, j, k)].b = -1;
-				mc_edge[IndexVect(i, j, k)].c = -1;
+				mc_edge[INDEXVECT(i, j, k)].a = -1;
+				mc_edge[INDEXVECT(i, j, k)].b = -1;
+				mc_edge[INDEXVECT(i, j, k)].c = -1;
 			}
 
 	//printf("max: %f && min: %f", max, min);
@@ -332,33 +338,33 @@ SURFACEMESH* marchingCube(float* dataset, float isovalue) {
 	float den1, den2, ratio;
 	int cellVerts[12], m;
 	unsigned char cellIndex;
-	FLTVECT *vertex = (FLTVECT*)malloc(sizeof(FLTVECT) * xdim * xpd * ydim * ypd * zdim * zpd);
-	INT3VECT *triangle = (INT3VECT*)malloc(sizeof(INT3VECT) * xdim * xpd * ydim * ypd * zdim * zpd);
+	FLTVECT *vertex = (FLTVECT*)malloc(sizeof(FLTVECT) * XDIM * xpd * YDIM * ypd * ZDIM * zpd);
+	INT3VECT *triangle = (INT3VECT*)malloc(sizeof(INT3VECT) * XDIM * xpd * YDIM * ypd * ZDIM * zpd);
 	int v_num = 0;
 	int t_num = 0;
 
-	for (k = 0; k < zdim * zpd - 1; k++)
-		for (j = 0; j < ydim * ypd - 1; j++)
-			for (i = 0; i < xdim * xpd - 1; i++) {
+	for (k = 0; k < ZDIM * zpd - 1; k++)
+		for (j = 0; j < YDIM * ypd - 1; j++)
+			for (i = 0; i < XDIM * xpd - 1; i++) {
 
 				for (m = 0; m < 12; m++)
 					cellVerts[m] = -1;
 
 				cellIndex = 0;
-				if (mc_sign[IndexVect(i, j, k)] == 255) cellIndex |= 1;
-				if (mc_sign[IndexVect(i, j + 1, k)] == 255) cellIndex |= 2;
-				if (mc_sign[IndexVect(i + 1, j + 1, k)] == 255) cellIndex |= 4;
-				if (mc_sign[IndexVect(i + 1, j, k)] == 255) cellIndex |= 8;
-				if (mc_sign[IndexVect(i, j, k + 1)] == 255) cellIndex |= 16;
-				if (mc_sign[IndexVect(i, j + 1, k + 1)] == 255) cellIndex |= 32;
-				if (mc_sign[IndexVect(i + 1, j + 1, k + 1)] == 255) cellIndex |= 64;
-				if (mc_sign[IndexVect(i + 1, j, k + 1)] == 255) cellIndex |= 128;
+				if (mc_sign[INDEXVECT(i, j, k)] == 255) cellIndex |= 1;
+				if (mc_sign[INDEXVECT(i, j + 1, k)] == 255) cellIndex |= 2;
+				if (mc_sign[INDEXVECT(i + 1, j + 1, k)] == 255) cellIndex |= 4;
+				if (mc_sign[INDEXVECT(i + 1, j, k)] == 255) cellIndex |= 8;
+				if (mc_sign[INDEXVECT(i, j, k + 1)] == 255) cellIndex |= 16;
+				if (mc_sign[INDEXVECT(i, j + 1, k + 1)] == 255) cellIndex |= 32;
+				if (mc_sign[INDEXVECT(i + 1, j + 1, k + 1)] == 255) cellIndex |= 64;
+				if (mc_sign[INDEXVECT(i + 1, j, k + 1)] == 255) cellIndex |= 128;
 
 				if (edgeTable[cellIndex] & 1) {
-					if (mc_edge[IndexVect(i, j, k)].b == -1) {
+					if (mc_edge[INDEXVECT(i, j, k)].b == -1) {
 
-						den1 = dataset[IndexVect(i, j, k)];
-						den2 = dataset[IndexVect(i, j + 1, k)];
+						den1 = dataset[INDEXVECT(i, j, k)];
+						den2 = dataset[INDEXVECT(i, j + 1, k)];
 						if (den1 != den2)
 							ratio = (isovalue - den1) / (den2 - den1);
 						else
@@ -368,18 +374,18 @@ SURFACEMESH* marchingCube(float* dataset, float isovalue) {
 						vertex[v_num].y = (float)j + ratio;
 						vertex[v_num].z = (float)k;
 						cellVerts[0] = v_num;
-						mc_edge[IndexVect(i, j, k)].b = v_num;
+						mc_edge[INDEXVECT(i, j, k)].b = v_num;
 						v_num++;
 					}
 					else
-						cellVerts[0] = mc_edge[IndexVect(i, j, k)].b;
+						cellVerts[0] = mc_edge[INDEXVECT(i, j, k)].b;
 				}
 
 				if (edgeTable[cellIndex] & 2) {
-					if (mc_edge[IndexVect(i, j + 1, k)].a == -1) {
+					if (mc_edge[INDEXVECT(i, j + 1, k)].a == -1) {
 
-						den1 = dataset[IndexVect(i, j + 1, k)];
-						den2 = dataset[IndexVect(i + 1, j + 1, k)];
+						den1 = dataset[INDEXVECT(i, j + 1, k)];
+						den2 = dataset[INDEXVECT(i + 1, j + 1, k)];
 						if (den1 != den2)
 							ratio = (isovalue - den1) / (den2 - den1);
 						else
@@ -389,18 +395,18 @@ SURFACEMESH* marchingCube(float* dataset, float isovalue) {
 						vertex[v_num].y = (float)j + 1;
 						vertex[v_num].z = (float)k;
 						cellVerts[1] = v_num;
-						mc_edge[IndexVect(i, j + 1, k)].a = v_num;
+						mc_edge[INDEXVECT(i, j + 1, k)].a = v_num;
 						v_num++;
 					}
 					else
-						cellVerts[1] = mc_edge[IndexVect(i, j + 1, k)].a;
+						cellVerts[1] = mc_edge[INDEXVECT(i, j + 1, k)].a;
 				}
 
 				if (edgeTable[cellIndex] & 4) {
-					if (mc_edge[IndexVect(i + 1, j, k)].b == -1) {
+					if (mc_edge[INDEXVECT(i + 1, j, k)].b == -1) {
 
-						den1 = dataset[IndexVect(i + 1, j, k)];
-						den2 = dataset[IndexVect(i + 1, j + 1, k)];
+						den1 = dataset[INDEXVECT(i + 1, j, k)];
+						den2 = dataset[INDEXVECT(i + 1, j + 1, k)];
 						if (den1 != den2)
 							ratio = (isovalue - den1) / (den2 - den1);
 						else
@@ -410,18 +416,18 @@ SURFACEMESH* marchingCube(float* dataset, float isovalue) {
 						vertex[v_num].y = (float)j + ratio;
 						vertex[v_num].z = (float)k;
 						cellVerts[2] = v_num;
-						mc_edge[IndexVect(i + 1, j, k)].b = v_num;
+						mc_edge[INDEXVECT(i + 1, j, k)].b = v_num;
 						v_num++;
 					}
 					else
-						cellVerts[2] = mc_edge[IndexVect(i + 1, j, k)].b;
+						cellVerts[2] = mc_edge[INDEXVECT(i + 1, j, k)].b;
 				}
 
 				if (edgeTable[cellIndex] & 8) {
-					if (mc_edge[IndexVect(i, j, k)].a == -1) {
+					if (mc_edge[INDEXVECT(i, j, k)].a == -1) {
 
-						den1 = dataset[IndexVect(i, j, k)];
-						den2 = dataset[IndexVect(i + 1, j, k)];
+						den1 = dataset[INDEXVECT(i, j, k)];
+						den2 = dataset[INDEXVECT(i + 1, j, k)];
 						if (den1 != den2)
 							ratio = (isovalue - den1) / (den2 - den1);
 						else
@@ -431,18 +437,18 @@ SURFACEMESH* marchingCube(float* dataset, float isovalue) {
 						vertex[v_num].y = (float)j;
 						vertex[v_num].z = (float)k;
 						cellVerts[3] = v_num;
-						mc_edge[IndexVect(i, j, k)].a = v_num;
+						mc_edge[INDEXVECT(i, j, k)].a = v_num;
 						v_num++;
 					}
 					else
-						cellVerts[3] = mc_edge[IndexVect(i, j, k)].a;
+						cellVerts[3] = mc_edge[INDEXVECT(i, j, k)].a;
 				}
 
 				if (edgeTable[cellIndex] & 16) {
-					if (mc_edge[IndexVect(i, j, k + 1)].b == -1) {
+					if (mc_edge[INDEXVECT(i, j, k + 1)].b == -1) {
 
-						den1 = dataset[IndexVect(i, j, k + 1)];
-						den2 = dataset[IndexVect(i, j + 1, k + 1)];
+						den1 = dataset[INDEXVECT(i, j, k + 1)];
+						den2 = dataset[INDEXVECT(i, j + 1, k + 1)];
 						if (den1 != den2)
 							ratio = (isovalue - den1) / (den2 - den1);
 						else
@@ -452,18 +458,18 @@ SURFACEMESH* marchingCube(float* dataset, float isovalue) {
 						vertex[v_num].y = (float)j + ratio;
 						vertex[v_num].z = (float)k + 1;
 						cellVerts[4] = v_num;
-						mc_edge[IndexVect(i, j, k + 1)].b = v_num;
+						mc_edge[INDEXVECT(i, j, k + 1)].b = v_num;
 						v_num++;
 					}
 					else
-						cellVerts[4] = mc_edge[IndexVect(i, j, k + 1)].b;
+						cellVerts[4] = mc_edge[INDEXVECT(i, j, k + 1)].b;
 				}
 
 				if (edgeTable[cellIndex] & 32) {
-					if (mc_edge[IndexVect(i, j + 1, k + 1)].a == -1) {
+					if (mc_edge[INDEXVECT(i, j + 1, k + 1)].a == -1) {
 
-						den1 = dataset[IndexVect(i, j + 1, k + 1)];
-						den2 = dataset[IndexVect(i + 1, j + 1, k + 1)];
+						den1 = dataset[INDEXVECT(i, j + 1, k + 1)];
+						den2 = dataset[INDEXVECT(i + 1, j + 1, k + 1)];
 						if (den1 != den2)
 							ratio = (isovalue - den1) / (den2 - den1);
 						else
@@ -473,18 +479,18 @@ SURFACEMESH* marchingCube(float* dataset, float isovalue) {
 						vertex[v_num].y = (float)j + 1;
 						vertex[v_num].z = (float)k + 1;
 						cellVerts[5] = v_num;
-						mc_edge[IndexVect(i, j + 1, k + 1)].a = v_num;
+						mc_edge[INDEXVECT(i, j + 1, k + 1)].a = v_num;
 						v_num++;
 					}
 					else
-						cellVerts[5] = mc_edge[IndexVect(i, j + 1, k + 1)].a;
+						cellVerts[5] = mc_edge[INDEXVECT(i, j + 1, k + 1)].a;
 				}
 
 				if (edgeTable[cellIndex] & 64) {
-					if (mc_edge[IndexVect(i + 1, j, k + 1)].b == -1) {
+					if (mc_edge[INDEXVECT(i + 1, j, k + 1)].b == -1) {
 
-						den1 = dataset[IndexVect(i + 1, j, k + 1)];
-						den2 = dataset[IndexVect(i + 1, j + 1, k + 1)];
+						den1 = dataset[INDEXVECT(i + 1, j, k + 1)];
+						den2 = dataset[INDEXVECT(i + 1, j + 1, k + 1)];
 						if (den1 != den2)
 							ratio = (isovalue - den1) / (den2 - den1);
 						else
@@ -494,18 +500,18 @@ SURFACEMESH* marchingCube(float* dataset, float isovalue) {
 						vertex[v_num].y = (float)j + ratio;
 						vertex[v_num].z = (float)k + 1;
 						cellVerts[6] = v_num;
-						mc_edge[IndexVect(i + 1, j, k + 1)].b = v_num;
+						mc_edge[INDEXVECT(i + 1, j, k + 1)].b = v_num;
 						v_num++;
 					}
 					else
-						cellVerts[6] = mc_edge[IndexVect(i + 1, j, k + 1)].b;
+						cellVerts[6] = mc_edge[INDEXVECT(i + 1, j, k + 1)].b;
 				}
 
 				if (edgeTable[cellIndex] & 128) {
-					if (mc_edge[IndexVect(i, j, k + 1)].a == -1) {
+					if (mc_edge[INDEXVECT(i, j, k + 1)].a == -1) {
 
-						den1 = dataset[IndexVect(i, j, k + 1)];
-						den2 = dataset[IndexVect(i + 1, j, k + 1)];
+						den1 = dataset[INDEXVECT(i, j, k + 1)];
+						den2 = dataset[INDEXVECT(i + 1, j, k + 1)];
 						if (den1 != den2)
 							ratio = (isovalue - den1) / (den2 - den1);
 						else
@@ -515,18 +521,18 @@ SURFACEMESH* marchingCube(float* dataset, float isovalue) {
 						vertex[v_num].y = (float)j;
 						vertex[v_num].z = (float)k + 1;
 						cellVerts[7] = v_num;
-						mc_edge[IndexVect(i, j, k + 1)].a = v_num;
+						mc_edge[INDEXVECT(i, j, k + 1)].a = v_num;
 						v_num++;
 					}
 					else
-						cellVerts[7] = mc_edge[IndexVect(i, j, k + 1)].a;
+						cellVerts[7] = mc_edge[INDEXVECT(i, j, k + 1)].a;
 				}
 
 				if (edgeTable[cellIndex] & 256) {
-					if (mc_edge[IndexVect(i, j, k)].c == -1) {
+					if (mc_edge[INDEXVECT(i, j, k)].c == -1) {
 
-						den1 = dataset[IndexVect(i, j, k)];
-						den2 = dataset[IndexVect(i, j, k + 1)];
+						den1 = dataset[INDEXVECT(i, j, k)];
+						den2 = dataset[INDEXVECT(i, j, k + 1)];
 						if (den1 != den2)
 							ratio = (isovalue - den1) / (den2 - den1);
 						else
@@ -536,18 +542,18 @@ SURFACEMESH* marchingCube(float* dataset, float isovalue) {
 						vertex[v_num].y = (float)j;
 						vertex[v_num].z = (float)k + ratio;
 						cellVerts[8] = v_num;
-						mc_edge[IndexVect(i, j, k)].c = v_num;
+						mc_edge[INDEXVECT(i, j, k)].c = v_num;
 						v_num++;
 					}
 					else
-						cellVerts[8] = mc_edge[IndexVect(i, j, k)].c;
+						cellVerts[8] = mc_edge[INDEXVECT(i, j, k)].c;
 				}
 
 				if (edgeTable[cellIndex] & 512) {
-					if (mc_edge[IndexVect(i, j + 1, k)].c == -1) {
+					if (mc_edge[INDEXVECT(i, j + 1, k)].c == -1) {
 
-						den1 = dataset[IndexVect(i, j + 1, k)];
-						den2 = dataset[IndexVect(i, j + 1, k + 1)];
+						den1 = dataset[INDEXVECT(i, j + 1, k)];
+						den2 = dataset[INDEXVECT(i, j + 1, k + 1)];
 						if (den1 != den2)
 							ratio = (isovalue - den1) / (den2 - den1);
 						else
@@ -557,18 +563,18 @@ SURFACEMESH* marchingCube(float* dataset, float isovalue) {
 						vertex[v_num].y = (float)j + 1;
 						vertex[v_num].z = (float)k + ratio;
 						cellVerts[9] = v_num;
-						mc_edge[IndexVect(i, j + 1, k)].c = v_num;
+						mc_edge[INDEXVECT(i, j + 1, k)].c = v_num;
 						v_num++;
 					}
 					else
-						cellVerts[9] = mc_edge[IndexVect(i, j + 1, k)].c;
+						cellVerts[9] = mc_edge[INDEXVECT(i, j + 1, k)].c;
 				}
 
 				if (edgeTable[cellIndex] & 1024) {
-					if (mc_edge[IndexVect(i + 1, j + 1, k)].c == -1) {
+					if (mc_edge[INDEXVECT(i + 1, j + 1, k)].c == -1) {
 
-						den1 = dataset[IndexVect(i + 1, j + 1, k)];
-						den2 = dataset[IndexVect(i + 1, j + 1, k + 1)];
+						den1 = dataset[INDEXVECT(i + 1, j + 1, k)];
+						den2 = dataset[INDEXVECT(i + 1, j + 1, k + 1)];
 						if (den1 != den2)
 							ratio = (isovalue - den1) / (den2 - den1);
 						else
@@ -578,18 +584,18 @@ SURFACEMESH* marchingCube(float* dataset, float isovalue) {
 						vertex[v_num].y = (float)j + 1;
 						vertex[v_num].z = (float)k + ratio;
 						cellVerts[10] = v_num;
-						mc_edge[IndexVect(i + 1, j + 1, k)].c = v_num;
+						mc_edge[INDEXVECT(i + 1, j + 1, k)].c = v_num;
 						v_num++;
 					}
 					else
-						cellVerts[10] = mc_edge[IndexVect(i + 1, j + 1, k)].c;
+						cellVerts[10] = mc_edge[INDEXVECT(i + 1, j + 1, k)].c;
 				}
 
 				if (edgeTable[cellIndex] & 2048) {
-					if (mc_edge[IndexVect(i + 1, j, k)].c == -1) {
+					if (mc_edge[INDEXVECT(i + 1, j, k)].c == -1) {
 
-						den1 = dataset[IndexVect(i + 1, j, k)];
-						den2 = dataset[IndexVect(i + 1, j, k + 1)];
+						den1 = dataset[INDEXVECT(i + 1, j, k)];
+						den2 = dataset[INDEXVECT(i + 1, j, k + 1)];
 						if (den1 != den2)
 							ratio = (isovalue - den1) / (den2 - den1);
 						else
@@ -599,11 +605,11 @@ SURFACEMESH* marchingCube(float* dataset, float isovalue) {
 						vertex[v_num].y = (float)j;
 						vertex[v_num].z = (float)k + ratio;
 						cellVerts[11] = v_num;
-						mc_edge[IndexVect(i + 1, j, k)].c = v_num;
+						mc_edge[INDEXVECT(i + 1, j, k)].c = v_num;
 						v_num++;
 					}
 					else
-						cellVerts[11] = mc_edge[IndexVect(i + 1, j, k)].c;
+						cellVerts[11] = mc_edge[INDEXVECT(i + 1, j, k)].c;
 				}
 
 				m = 0;
@@ -629,31 +635,63 @@ SURFACEMESH* marchingCube(float* dataset, float isovalue) {
 	return surfmesh;
 }
 
+void findPeriodies(float *bounds) {
+	float length_x = bounds[3] - bounds[0];
+	float length_y = bounds[4] - bounds[1];
+	float length_z = bounds[5] - bounds[2];
+	float max_length = fmax(length_x, fmax(length_y, length_z));
+	float interval = max_length / MAX_PERIOD;
+	xpd = ceil(length_x / interval);
+	ypd = ceil(length_y / interval);
+	zpd = ceil(length_z / interval);
+	bounds[3] = bounds[0] + xpd * interval;
+	bounds[4] = bounds[1] + ypd * interval;
+	bounds[5] = bounds[2] + zpd * interval;
+}
+
+void normalizeSurfMesh(SURFACEMESH *surfmesh, float *bounds) {
+	float *surf_bounds = (float *)malloc(sizeof(float) * 6);
+	findBoundaries(surf_bounds, surfmesh);
+
+	int n;
+	float ratio_x, ratio_y, ratio_z;
+	for (n = 0; n < surfmesh->nv; n++) {
+		ratio_x = (surfmesh->vertex[n].x - surf_bounds[0]) / (surf_bounds[3] - surf_bounds[0]);
+		ratio_y = (surfmesh->vertex[n].y - surf_bounds[1]) / (surf_bounds[4] - surf_bounds[1]);
+		ratio_z = (surfmesh->vertex[n].z - surf_bounds[2]) / (surf_bounds[5] - surf_bounds[2]);
+		surfmesh->vertex[n].x = bounds[0] + ratio_x * (bounds[3] - bounds[0]);
+		surfmesh->vertex[n].y = bounds[1] + ratio_y * (bounds[4] - bounds[1]);
+		surfmesh->vertex[n].z = bounds[2] + ratio_z * (bounds[5] - bounds[2]);
+	}
+
+	free(surf_bounds);
+}
+
 float* generateDataset(SURFACE_TYPE type) {
 	int i, j, k;
-	float *data = (float *)malloc(sizeof(float) * xdim * xpd * ydim * ypd * zdim * zpd);
+	float *data = (float *)malloc(sizeof(float) * XDIM * xpd * YDIM * ypd * ZDIM * zpd);
 
-	for (k = 0; k < zdim * zpd; k++)
-		for (j = 0; j < ydim * ypd; j++)
-			for (i = 0; i < xdim * xpd; i++) {
+	for (k = 0; k < ZDIM * zpd; k++)
+		for (j = 0; j < YDIM * ypd; j++)
+			for (i = 0; i < XDIM * xpd; i++) {
 
-				float a = 2 * PI / xdim * i;
-				float b = 2 * PI / ydim * j;
-				float c = 2 * PI / zdim * k;
+				float a = 2 * PI / XDIM * i;
+				float b = 2 * PI / YDIM * j;
+				float c = 2 * PI / ZDIM * k;
 
 				switch (type) {
 				case PSURFACE:
-					data[IndexVect(i, j, k)] = cos(a) + cos(b) + cos(c);
+					data[INDEXVECT(i, j, k)] = cos(a) + cos(b) + cos(c);
 					break;
 				case DSURFACE:
-					data[IndexVect(i, j, k)] = sin(a) * sin(b) * sin(c) + sin(a) * cos(b) * cos(c) + cos(a) * sin(b) * cos(c) + cos(a) * cos(b) * sin(c);
+					data[INDEXVECT(i, j, k)] = sin(a) * sin(b) * sin(c) + sin(a) * cos(b) * cos(c) + cos(a) * sin(b) * cos(c) + cos(a) * cos(b) * sin(c);
 					break;
 				case GSURFACE:
-					data[IndexVect(i, j, k)] = cos(a) * sin(b) + cos(b) * sin(c) + cos(c) * sin(a);
+					data[INDEXVECT(i, j, k)] = cos(a) * sin(b) + cos(b) * sin(c) + cos(c) * sin(a);
 					//+ cos(a) * sin(c) + cos(b) * sin(a) + cos(c) * sin(b);
 					break;
 				case IWPSURFACE:
-					data[IndexVect(i, j, k)] = 2 * (cos(a) * cos(b) + cos(b) * cos(c) + cos(c) * cos(a)) - cos(2 * a) - cos(2 * b) - cos(2 * c);
+					data[INDEXVECT(i, j, k)] = 2 * (cos(a) * cos(b) + cos(b) * cos(c) + cos(c) * cos(a)) - cos(2 * a) - cos(2 * b) - cos(2 * c);
 					break;
 				}
 			}
@@ -685,7 +723,7 @@ SURFACEMESH* readMesh(char *path) {
   int num, n, m;
   int a, b, c, d;
   float x, y, z;
-  SurFacemesh *surfmesh;
+  SURFACEMESH *surfmesh;
   char line[256];
   FILE *fin;
 
@@ -693,7 +731,7 @@ SURFACEMESH* readMesh(char *path) {
   if ((fin=fopen(path, "r"))==NULL){
     perror("Read Mesh File Failed!\n");
     exit(0);
-  };
+  }
 
   /* OFF format */
   while (fgets(line,256,fin) != NULL) {
@@ -703,7 +741,7 @@ SURFACEMESH* readMesh(char *path) {
 
   fscanf(fin,"%d %d %d\n",&m,&n,&num);
 
-  surfmesh = (SURFACEMESH*)malloc(sizeof(SURFACEMESH));
+  surfmesh = (SURFACEMESH *)malloc(sizeof(SURFACEMESH));
   surfmesh->nv = m;
   surfmesh->nf = n;
   surfmesh->vertex = (FLTVECT *)malloc(sizeof(FLTVECT)*surfmesh->nv);
@@ -722,7 +760,36 @@ SURFACEMESH* readMesh(char *path) {
     surfmesh->face[n].b = c;
     surfmesh->face[n].c = d;
   }
+
   fclose(fin);
 
   return surfmesh;
+}
+
+// min_x, min_y, min_z, max_x, max_y, max_z
+void findBoundaries(float *bounds, SURFACEMESH *surfmesh) {
+	int n;
+	for(n = 0; n < 6; n++) {
+		if(n < 3)
+			bounds[n] = FLT_MAX;
+		else
+			bounds[n] = FLT_MIN;
+	}
+
+	FLTVECT *node;
+	for (n = 0; n < surfmesh->nv; n++) {
+		node = (surfmesh->vertex) + n;
+		if(node->x < bounds[0])
+			bounds[0] = node->x;
+		if(node->y < bounds[1])
+			bounds[1] = node->y;
+		if(node->z < bounds[2])
+			bounds[2] = node->z;
+		if(node->x > bounds[3])
+			bounds[3] = node->x;
+		if(node->y > bounds[4])
+			bounds[4] = node->y;
+		if(node->z > bounds[5])
+			bounds[5] = node->z;
+  }
 }

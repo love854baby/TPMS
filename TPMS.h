@@ -1,20 +1,12 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
-#include <math.h>
-
 #define PI 3.14159265358979323846
 
-#define xdim 200 // Decide the number of the intervals in one unit on x-dimension
-#define ydim 200 // Decide the number of the intervals in one unit on y-dimension
-#define zdim 200 // Decide the number of the intervals in one unit on z-dimension
+#define XDIM 20 // Decide the number of the intervals in one unit on x-dimension
+#define YDIM 20 // Decide the number of the intervals in one unit on y-dimension
+#define ZDIM 20 // Decide the number of the intervals in one unit on z-dimension
 
-#define xpd 2 // Change the period of x-dimension
-#define ypd 2 // Change the period of y-dimension
-#define zpd 2 // Change the period of z-dimension
+#define MAX_PERIOD 50
 
-#define Index(i, j, k) ((i) + ((j) * xdim) + (((k) * xdim) * ydim))
-#define IndexVect(i, j, k) ((i) + (((j) * xdim) * xpd) + (((((k) * xdim) * xpd) * ydim) * ypd))
+#define INDEXVECT(i, j, k) ((i) + (((j) * XDIM) * xpd) + (((((k) * XDIM) * xpd) * YDIM) * ypd))
 
 typedef enum {
 	PSURFACE, DSURFACE, GSURFACE, IWPSURFACE
@@ -45,5 +37,7 @@ typedef struct {
 float* generateDataset(SURFACE_TYPE type);
 void writeOFF(char *name, SURFACEMESH *surfmesh);
 SURFACEMESH* marchingCube(float* dataset, float isovalue);
-void findBoundaries(float **bounds);
+void findBoundaries(float *bounds, SURFACEMESH *surfmesh);
 SURFACEMESH* readMesh(char *path);
+void normalizeSurfMesh(SURFACEMESH *surfmesh, float *bounds);
+void findPeriodies(float *bounds);
