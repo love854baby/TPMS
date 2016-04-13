@@ -21,19 +21,19 @@ int main() {
 	free(bone);
 
 	float *data = generateDataset(type);
-
+	closeHoles(data);
 	SURFACEMESH *surfmesh = marchingCube(data, iso_value);
 
-  free(data);
+	free(data);
 
-  diff = clock() - start;
+	diff = clock() - start;
 
 	int msec = diff * 1000 / CLOCKS_PER_SEC;
 	printf("Time taken %d seconds %d milliseconds\n", msec / 1000, msec % 1000);
 
 	char *name = (char *)"test.off";
 	normalizeSurfMesh(surfmesh, bounds);
-  writeOFF(name, surfmesh);
+	writeOFF(name, surfmesh);
 
 	free(bounds);
 	free(surfmesh->vertex);
