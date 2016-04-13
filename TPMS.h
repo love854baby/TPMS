@@ -4,7 +4,6 @@
 #define YDIM 20 // Decide the number of the intervals in one unit on y-dimension
 #define ZDIM 20 // Decide the number of the intervals in one unit on z-dimension
 
-#define MAX_PERIOD 20
 #define MAX_PERIOD 40
 
 #define INDEXVECT(i, j, k) ((i) + (((j) * XDIM) * xpd) + (((((k) * XDIM) * xpd) * YDIM) * ypd))
