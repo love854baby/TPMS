@@ -39,10 +39,6 @@ int edgeTable[256] = {
 	0x70c, 0x605, 0x50f, 0x406, 0x30a, 0x203, 0x109, 0x0
 };
 
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/master
 int triTable[256][16] = {
 	{ -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
 	{ 0, 8, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
@@ -303,10 +299,7 @@ int triTable[256][16] = {
 };
 
 int xpd, ypd, zpd;
-<<<<<<< HEAD
 const float OUTSIDE = FLT_MAX;
-=======
->>>>>>> origin/master
 
 SURFACEMESH* marchingCube(float* dataset, float isovalue) {
 	INT3VECT *mc_edge = (INT3VECT*)malloc(sizeof(INT3VECT) * XDIM * xpd * YDIM * ypd * ZDIM * zpd);
@@ -800,7 +793,6 @@ void findBoundaries(float *bounds, SURFACEMESH *surfmesh) {
 			bounds[5] = node->z;
   }
 }
-<<<<<<< HEAD
 
 void closeHoles(float *dataset) {
 	int i, j, k;
@@ -823,5 +815,3 @@ void closeHoles(float *dataset) {
 			dataset[INDEXVECT(XDIM * xpd - 1, j, k)] = OUTSIDE;
 		}
 }
-=======
->>>>>>> origin/master

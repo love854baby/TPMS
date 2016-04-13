@@ -4,11 +4,7 @@
 #define YDIM 20 // Decide the number of the intervals in one unit on y-dimension
 #define ZDIM 20 // Decide the number of the intervals in one unit on z-dimension
 
-<<<<<<< HEAD
 #define MAX_PERIOD 40
-=======
-#define MAX_PERIOD 50
->>>>>>> origin/master
 
 #define INDEXVECT(i, j, k) ((i) + (((j) * XDIM) * xpd) + (((((k) * XDIM) * xpd) * YDIM) * ypd))
 
@@ -45,7 +41,4 @@ void findBoundaries(float *bounds, SURFACEMESH *surfmesh);
 SURFACEMESH* readMesh(char *path);
 void normalizeSurfMesh(SURFACEMESH *surfmesh, float *bounds);
 void findPeriodies(float *bounds);
-<<<<<<< HEAD
 void closeHoles(float *dataset);
-=======
->>>>>>> origin/master
